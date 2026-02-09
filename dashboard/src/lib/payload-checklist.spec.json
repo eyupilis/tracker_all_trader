@@ -1,0 +1,93 @@
+{
+  "topLevel": [
+    "leadId",
+    "fetchedAt",
+    "timeRange",
+    "startTime",
+    "endTime",
+    "leadCommon",
+    "portfolioDetail",
+    "roiSeries",
+    "assetPreferences",
+    "activePositions",
+    "orderHistory"
+  ],
+  "leadCommon": [
+    "leadOwner",
+    "futuresPublicLPId",
+    "futuresPublicLPStatus",
+    "futuresPrivateLPId",
+    "futuresPrivateLPStatus",
+    "spotPublicLPId",
+    "spotPublicLPStatus",
+    "spotPrivateLPId",
+    "spotPrivateLPStatus"
+  ],
+  "portfolioDetail": [
+    "leadPortfolioId",
+    "publicLeadPortfolioId",
+    "privateLeadPortfolioId",
+    "status",
+    "portfolioType",
+    "futuresType",
+    "currentCopyCount",
+    "maxCopyCount",
+    "riskControlMaxCopyCount",
+    "finalEffectiveMaxCopyCount",
+    "fixedAmountMinCopyUsd",
+    "fixedRadioMinCopyUsd",
+    "lockPeriod",
+    "copierLockPeriodTime",
+    "copierUnlockExpiredTime",
+    "enableTradingSignal",
+    "feedShareSwitch",
+    "feedAgreement",
+    "syncSetting",
+    "syncSettingCount",
+    "inviteCodeCount",
+    "lastTradeTime"
+  ],
+  "assetPreferences": [
+    "data",
+    "timeRange",
+    "updateTime"
+  ],
+  "orderHistory": [
+    "total",
+    "allOrders"
+  ],
+  "orderRow": [
+    "symbol",
+    "baseAsset",
+    "quoteAsset",
+    "side",
+    "type",
+    "positionSide",
+    "executedQty",
+    "avgPrice",
+    "totalPnl",
+    "orderTime",
+    "orderUpdateTime"
+  ],
+  "positionRow": [
+    "id",
+    "symbol",
+    "collateral",
+    "positionAmount",
+    "entryPrice",
+    "markPrice",
+    "leverage",
+    "isolated",
+    "positionSide",
+    "unrealizedProfit",
+    "cumRealized",
+    "notionalValue",
+    "breakEvenPrice",
+    "adl"
+  ],
+  "roiRow": [
+    "value",
+    "dataType",
+    "dateTime"
+  ]
+}

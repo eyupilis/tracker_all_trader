@@ -1,0 +1,27 @@
+{
+  "tabs": [
+    "overview",
+    "insights",
+    "positions",
+    "orders",
+    "operations",
+    "raw"
+  ],
+  "insightsComponents": [
+    "SnapshotDiffCard",
+    "TraderRiskSurfaceCard",
+    "TraderCompareMetricsCard"
+  ],
+  "operationsComponents": [
+    "ProfileOperationsOverview",
+    "KeyValueInspectorCard",
+    "RawPayloadViewer"
+  ],
+  "featureFlags": [
+    "insightsTab",
+    "compareMode",
+    "virtualizedTables",
+    "mobileDetailDrawers",
+    "inspectorDetailDrawer"
+  ]
+}
