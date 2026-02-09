@@ -1,0 +1,561 @@
+[
+    {
+        "leadId": "4681698170884314113",
+        "fetchedAt": "2026-02-05T17:21:10.789Z",
+        "timeRange": "30D",
+        "startTime": 1767720070788,
+        "endTime": 1770312070788,
+        "leadCommon": {
+            "leadOwner": false,
+            "futuresPublicLPId": "4681698170884314113",
+            "futuresPublicLPStatus": "ACTIVE",
+            "futuresPrivateLPId": null,
+            "futuresPrivateLPStatus": null,
+            "spotPublicLPId": "4408641296780988672",
+            "spotPublicLPStatus": "END",
+            "spotPrivateLPId": "4408641045834039552",
+            "spotPrivateLPStatus": "END"
+        },
+        "portfolioDetail": {
+            "userId": null,
+            "leadOwner": false,
+            "hasCopy": false,
+            "hasSlotReminder": false,
+            "leadPortfolioId": "4681698170884314113",
+            "nickname": "晚风007",
+            "nicknameTranslate": null,
+            "avatarUrl": "https://public-1306379396.file.myqcloud.com/image/avatar/202411/db343908d106f29cee6908777c0dcdd5.jpg",
+            "status": "ACTIVE",
+            "description": "翻倍提本金\n放长线钓大鱼🐠\n花生米钓鲨鱼🦈\n杠杠手动设置3x\n杠杠手动设置3x\n杠杠手动设置3x\n重要的事情说三遍",
+            "descTranslate": null,
+            "favoriteCount": 1037,
+            "currentCopyCount": 71,
+            "maxCopyCount": 400,
+            "riskControlMaxCopyCount": null,
+            "finalEffectiveMaxCopyCount": null,
+            "totalCopyCount": 1174,
+            "closeLeadCount": 5,
+            "marginBalance": "39762.99563809",
+            "initInvestAsset": "USDT",
+            "futuresType": "UM",
+            "aumAmount": "101781.62807384",
+            "copierPnl": "8876.29296263",
+            "copierPnlAsset": "USDT",
+            "profitSharingRate": "10.00",
+            "unrealizedProfitShareAmount": "0",
+            "startTime": 1757009356548,
+            "endTime": null,
+            "closedTime": null,
+            "tag": [
+                "HIGH_LEVERAGE"
+            ],
+            "positionShow": true,
+            "mockCopyCount": 1093,
+            "sharpRatio": "3.21238160",
+            "hasMock": false,
+            "lockPeriod": 30,
+            "copierLockPeriodTime": null,
+            "copierUnlockExpiredTime": null,
+            "badgeName": "MASTER",
+            "badgeModifyTime": 1770252317000,
+            "badgeCopierCount": 800,
+            "tagItemVos": [
+                {
+                    "tagName": "HIGH_LEVERAGE",
+                    "tagLangKey": "tag_lang_HIGH_LEVERAGE",
+                    "descLangKey": "desc_lang_HIGH_LEVERAGE",
+                    "describeParams": {},
+                    "enDescribe": null,
+                    "cnDescribe": null,
+                    "sort": 1,
+                    "tagLangKeyMessage": "High leverage",
+                    "descLangKeyMessage": null
+                },
+                {
+                    "tagName": "Whale_Manager",
+                    "tagLangKey": "tag_lang_whale_manager",
+                    "descLangKey": "desc_lang_whale_manager",
+                    "describeParams": {
+                        "name": "晚风007",
+                        "days": "90",
+                        "ranking": "5",
+                        "aumAmount": "50K"
+                    },
+                    "enDescribe": null,
+                    "cnDescribe": null,
+                    "sort": 3,
+                    "tagLangKeyMessage": "Whale Manager",
+                    "descLangKeyMessage": null
+                }
+            ],
+            "feedAgreement": false,
+            "feedShareSwitch": false,
+            "feedSharePushLimit": 25,
+            "fixedRadioMinCopyUsd": 200,
+            "fixedAmountMinCopyUsd": 200,
+            "portfolioType": "PUBLIC",
+            "publicLeadPortfolioId": "4681698170884314113",
+            "privateLeadPortfolioId": null,
+            "inviteCodeCount": 0,
+            "enableTradingSignal": false,
+            "enableAddMaxCopier": true,
+            "pgcUsername": "Square-Creator-483bc1a59649",
+            "syncSetting": false,
+            "syncSettingCount": 2,
+            "lastTradeTime": 1770308634609,
+            "rebateFee": "172.15881974",
+            "favorite": false
+        },
+        "roiSeries": [
+            {
+                "value": 56.55897943,
+                "dataType": "ROI",
+                "dateTime": 1767744000000
+            },
+            {
+                "value": 65.84573241,
+                "dataType": "ROI",
+                "dateTime": 1767830400000
+            },
+            {
+                "value": 63.37916339,
+                "dataType": "ROI",
+                "dateTime": 1767916800000
+            },
+            {
+                "value": 82.64825229,
+                "dataType": "ROI",
+                "dateTime": 1768003200000
+            },
+            {
+                "value": 83.91254032,
+                "dataType": "ROI",
+                "dateTime": 1768089600000
+            },
+            {
+                "value": 75.15567577,
+                "dataType": "ROI",
+                "dateTime": 1768176000000
+            },
+            {
+                "value": 12.45457319,
+                "dataType": "ROI",
+                "dateTime": 1768262400000
+            },
+            {
+                "value": -23.0253015,
+                "dataType": "ROI",
+                "dateTime": 1768348800000
+            },
+            {
+                "value": 12.46352041,
+                "dataType": "ROI",
+                "dateTime": 1768435200000
+            },
+            {
+                "value": 20.08186512,
+                "dataType": "ROI",
+                "dateTime": 1768521600000
+            },
+            {
+                "value": 27.63539844,
+                "dataType": "ROI",
+                "dateTime": 1768608000000
+            },
+            {
+                "value": 54.80170369,
+                "dataType": "ROI",
+                "dateTime": 1768694400000
+            },
+            {
+                "value": 83.84206555,
+                "dataType": "ROI",
+                "dateTime": 1768780800000
+            },
+            {
+                "value": 214.14599224,
+                "dataType": "ROI",
+                "dateTime": 1768867200000
+            },
+            {
+                "value": 93.18243643,
+                "dataType": "ROI",
+                "dateTime": 1768953600000
+            },
+            {
+                "value": 55.07599598,
+                "dataType": "ROI",
+                "dateTime": 1769040000000
+            },
+            {
+                "value": 75.29766278,
+                "dataType": "ROI",
+                "dateTime": 1769126400000
+            },
+            {
+                "value": 24.50575775,
+                "dataType": "ROI",
+                "dateTime": 1769212800000
+            },
+            {
+                "value": 181.03607308,
+                "dataType": "ROI",
+                "dateTime": 1769299200000
+            },
+            {
+                "value": 81.90581076,
+                "dataType": "ROI",
+                "dateTime": 1769385600000
+            },
+            {
+                "value": -47.19891717,
+                "dataType": "ROI",
+                "dateTime": 1769472000000
+            },
+            {
+                "value": -12.77023529,
+                "dataType": "ROI",
+                "dateTime": 1769558400000
+            },
+            {
+                "value": 173.39906256,
+                "dataType": "ROI",
+                "dateTime": 1769644800000
+            },
+            {
+                "value": 264.78776025,
+                "dataType": "ROI",
+                "dateTime": 1769731200000
+            },
+            {
+                "value": 591.27060978,
+                "dataType": "ROI",
+                "dateTime": 1769817600000
+            },
+            {
+                "value": 680.71695375,
+                "dataType": "ROI",
+                "dateTime": 1769904000000
+            },
+            {
+                "value": 631.82591364,
+                "dataType": "ROI",
+                "dateTime": 1769990400000
+            },
+            {
+                "value": 699.92178708,
+                "dataType": "ROI",
+                "dateTime": 1770076800000
+            },
+            {
+                "value": 710.45183564,
+                "dataType": "ROI",
+                "dateTime": 1770163200000
+            },
+            {
+                "value": 594.91226719,
+                "dataType": "ROI",
+                "dateTime": 1770310800000
+            }
+        ],
+        "assetPreferences": {
+            "timeRange": "30D",
+            "updateTime": 1770304062000,
+            "data": [
+                {
+                    "asset": "ETH",
+                    "volume": 42.65
+                },
+                {
+                    "asset": "BTC",
+                    "volume": 19.74
+                },
+                {
+                    "asset": "SOL",
+                    "volume": 8.65
+                },
+                {
+                    "asset": "WLFI",
+                    "volume": 7.28
+                },
+                {
+                    "asset": "HYPE",
+                    "volume": 6.84
+                },
+                {
+                    "asset": "RIVER",
+                    "volume": 5.54
+                },
+                {
+                    "asset": "ZEC",
+                    "volume": 4.41
+                },
+                {
+                    "asset": "PIPPIN",
+                    "volume": 2.11
+                },
+                {
+                    "asset": "XMR",
+                    "volume": 1.43
+                },
+                {
+                    "asset": "DASH",
+                    "volume": 0.87
+                },
+                {
+                    "asset": "OTHER",
+                    "volume": 0.48
+                }
+            ]
+        },
+        "activePositions": [
+            {
+                "id": "0_HYPEUSDT_LONG",
+                "symbol": "HYPEUSDT",
+                "collateral": "USDT",
+                "positionAmount": "1093.09",
+                "entryPrice": "33.57093894394",
+                "markPrice": "32.15244529",
+                "leverage": 40,
+                "isolated": false,
+                "positionSide": "LONG",
+                "unrealizedProfit": "-1550.54122387",
+                "cumRealized": "45.10017013",
+                "notionalValue": "35145.51642204",
+                "breakEvenPrice": "33.54123430084",
+                "adl": 1
+            },
+            {
+                "id": "0_SOLUSDT_SHORT",
+                "symbol": "SOLUSDT",
+                "collateral": "USDT",
+                "positionAmount": "-2.13",
+                "entryPrice": "109.6380595463",
+                "markPrice": "82.61165617",
+                "leverage": 46,
+                "isolated": false,
+                "positionSide": "SHORT",
+                "unrealizedProfit": "57.56623917",
+                "cumRealized": "5600.27613196",
+                "notionalValue": "-175.96282764",
+                "breakEvenPrice": "1863.659237294",
+                "adl": 1
+            },
+            {
+                "id": "0_ETHUSDT_LONG",
+                "symbol": "ETHUSDT",
+                "collateral": "USDT",
+                "positionAmount": "22.018",
+                "entryPrice": "2091.139770642",
+                "markPrice": "1947.21000000",
+                "leverage": 120,
+                "isolated": false,
+                "positionSide": "LONG",
+                "unrealizedProfit": "-3169.04568995",
+                "cumRealized": "1474.39469938",
+                "notionalValue": "42873.66978000",
+                "breakEvenPrice": "2092.181210395",
+                "adl": 1
+            },
+            {
+                "id": "0_WLFIUSDT_LONG",
+                "symbol": "WLFIUSDT",
+                "collateral": "USDT",
+                "positionAmount": "51389",
+                "entryPrice": "0.1317564225807",
+                "markPrice": "0.11870000",
+                "leverage": 39,
+                "isolated": false,
+                "positionSide": "LONG",
+                "unrealizedProfit": "-670.95636738",
+                "cumRealized": "42.34459999",
+                "notionalValue": "6099.87430000",
+                "breakEvenPrice": "0.1317990239538",
+                "adl": 2
+            },
+            {
+                "id": "0_WLFIUSDT_SHORT",
+                "symbol": "WLFIUSDT",
+                "collateral": "USDT",
+                "positionAmount": "-4632",
+                "entryPrice": "0.1493925633767",
+                "markPrice": "0.11870000",
+                "leverage": 39,
+                "isolated": false,
+                "positionSide": "SHORT",
+                "unrealizedProfit": "142.16793792",
+                "cumRealized": "5678.14504544",
+                "notionalValue": "-549.81840000",
+                "breakEvenPrice": "1.365268624261",
+                "adl": 0
+            },
+            {
+                "id": "0_BTCUSDT_LONG",
+                "symbol": "BTCUSDT",
+                "collateral": "USDT",
+                "positionAmount": "0.771",
+                "entryPrice": "73046.39299611",
+                "markPrice": "66517.20000000",
+                "leverage": 120,
+                "isolated": false,
+                "positionSide": "LONG",
+                "unrealizedProfit": "-5034.00780000",
+                "cumRealized": "295.99400001",
+                "notionalValue": "51284.76120000",
+                "breakEvenPrice": "73079.4561056",
+                "adl": 1
+            },
+            {
+                "id": "0_BTCUSDT_SHORT",
+                "symbol": "BTCUSDT",
+                "collateral": "USDT",
+                "positionAmount": "-0.020",
+                "entryPrice": "86232.47857539",
+                "markPrice": "66517.20000000",
+                "leverage": 120,
+                "isolated": false,
+                "positionSide": "SHORT",
+                "unrealizedProfit": "394.30557150",
+                "cumRealized": "16945.09942720",
+                "notionalValue": "-1330.34400000",
+                "breakEvenPrice": "660381.8726328",
+                "adl": 0
+            }
+        ],
+        "orderHistory": {
+            "total": 1195,
+            "allOrders": [
+                {
+                    "symbol": "BTCUSDT",
+                    "baseAsset": "BTC",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "MARKET",
+                    "positionSide": "SHORT",
+                    "executedQty": 0.019,
+                    "avgPrice": 68098.7,
+                    "totalPnl": 344.54179293,
+                    "orderUpdateTime": 1770306789214,
+                    "orderTime": 1770306789214
+                },
+                {
+                    "symbol": "WLFIUSDT",
+                    "baseAsset": "WLFI",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "MARKET",
+                    "positionSide": "SHORT",
+                    "executedQty": 4449,
+                    "avgPrice": 0.126,
+                    "totalPnl": 104.07351446,
+                    "orderUpdateTime": 1770306784985,
+                    "orderTime": 1770306784985
+                },
+                {
+                    "symbol": "BTCUSDT",
+                    "baseAsset": "BTC",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "LIMIT",
+                    "positionSide": "LONG",
+                    "executedQty": 0.014,
+                    "avgPrice": 68091.7,
+                    "totalPnl": 0,
+                    "orderUpdateTime": 1770306772338,
+                    "orderTime": 1770306772338
+                },
+                {
+                    "symbol": "HYPEUSDT",
+                    "baseAsset": "HYPE",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "LIMIT",
+                    "positionSide": "LONG",
+                    "executedQty": 31.35,
+                    "avgPrice": 31.8946641,
+                    "totalPnl": 0,
+                    "orderUpdateTime": 1770306585801,
+                    "orderTime": 1770306585801
+                },
+                {
+                    "symbol": "WLFIUSDT",
+                    "baseAsset": "WLFI",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "LIMIT",
+                    "positionSide": "LONG",
+                    "executedQty": 7184,
+                    "avgPrice": 0.1231,
+                    "totalPnl": 0,
+                    "orderUpdateTime": 1770306308960,
+                    "orderTime": 1770306308960
+                },
+                {
+                    "symbol": "WLFIUSDT",
+                    "baseAsset": "WLFI",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "MARKET",
+                    "positionSide": "SHORT",
+                    "executedQty": 3027,
+                    "avgPrice": 0.1227,
+                    "totalPnl": 80.79838933,
+                    "orderUpdateTime": 1770306299203,
+                    "orderTime": 1770306299203
+                },
+                {
+                    "symbol": "SOLUSDT",
+                    "baseAsset": "SOL",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "MARKET",
+                    "positionSide": "SHORT",
+                    "executedQty": 0.67,
+                    "avgPrice": 85.36,
+                    "totalPnl": 16.26629989,
+                    "orderUpdateTime": 1770306294429,
+                    "orderTime": 1770306294429
+                },
+                {
+                    "symbol": "BTCUSDT",
+                    "baseAsset": "BTC",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "MARKET",
+                    "positionSide": "SHORT",
+                    "executedQty": 0.013,
+                    "avgPrice": 67412.23077,
+                    "totalPnl": 244.66322146,
+                    "orderUpdateTime": 1770306289411,
+                    "orderTime": 1770306289411
+                },
+                {
+                    "symbol": "ETHUSDT",
+                    "baseAsset": "ETH",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "LIMIT",
+                    "positionSide": "LONG",
+                    "executedQty": 0.507,
+                    "avgPrice": 1970.84,
+                    "totalPnl": 0,
+                    "orderUpdateTime": 1770306142839,
+                    "orderTime": 1770306142839
+                },
+                {
+                    "symbol": "ETHUSDT",
+                    "baseAsset": "ETH",
+                    "quoteAsset": "USDT",
+                    "side": "BUY",
+                    "type": "LIMIT",
+                    "positionSide": "LONG",
+                    "executedQty": 0.511,
+                    "avgPrice": 1955.60303,
+                    "totalPnl": 0,
+                    "orderUpdateTime": 1770305989494,
+                    "orderTime": 1770305988484
+                }
+            ]
+        }
+    }
+]

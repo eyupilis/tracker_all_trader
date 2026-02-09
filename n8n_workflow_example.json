@@ -1,0 +1,90 @@
+{
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "workflow-config-node",
+            "name": "Workflow Configuration",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                400,
+                624
+            ],
+            "notes": "Set your configuration here"
+        },
+        {
+            "parameters": {
+                "mode": "runOnceForAllItems",
+                "jsCode": "// Transform Binance scraper output to Backend API format\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const data = item.json;\n  const leadId = data.leadId;\n  const fetchedAt = data.fetchedAt;\n  \n  // Transform activePositions to positions array\n  const positions = (data.activePositions || []).map(pos => {\n    const positionAmount = parseFloat(pos.positionAmount);\n    const side = pos.positionSide; // LONG or SHORT\n    \n    return {\n      platform: \"binance\",\n      leadId: leadId,\n      symbol: pos.symbol,\n      contractType: \"PERP\",\n      leverage: pos.leverage,\n      size: positionAmount, // Keep sign as-is\n      sizeAsset: pos.symbol.replace('USDT', ''),\n      side: side,\n      entryPrice: parseFloat(pos.entryPrice),\n      markPrice: parseFloat(pos.markPrice),\n      marginUSDT: Math.abs(parseFloat(pos.notionalValue) / pos.leverage),\n      marginType: pos.isolated ? \"ISOLATED\" : \"CROSS\",\n      pnlUSDT: parseFloat(pos.unrealizedProfit),\n      roePct: null, // Not available in raw data\n      fetchedAt: fetchedAt\n    };\n  });\n  \n  // Transform orderHistory to events array\n  const events = (data.orderHistory?.allOrders || []).map(order => {\n    // Determine event type based on side + positionSide\n    // BUY + LONG = OPEN_LONG (adding to long)\n    // SELL + LONG = CLOSE_LONG (closing long)\n    // BUY + SHORT = CLOSE_SHORT (closing short)\n    // SELL + SHORT = OPEN_SHORT (adding to short)\n    let eventType = \"UNKNOWN\";\n    if (order.side === \"BUY\" && order.positionSide === \"LONG\") {\n      eventType = \"OPEN_LONG\";\n    } else if (order.side === \"SELL\" && order.positionSide === \"LONG\") {\n      eventType = \"CLOSE_LONG\";\n    } else if (order.side === \"BUY\" && order.positionSide === \"SHORT\") {\n      eventType = \"CLOSE_SHORT\";\n    } else if (order.side === \"SELL\" && order.positionSide === \"SHORT\") {\n      eventType = \"OPEN_SHORT\";\n    }\n    \n    // Format timestamp to \"MM-DD, HH:MM:SS\"\n    const orderDate = new Date(order.orderUpdateTime);\n    const month = String(orderDate.getUTCMonth() + 1).padStart(2, '0');\n    const day = String(orderDate.getUTCDate()).padStart(2, '0');\n    const hours = String(orderDate.getUTCHours()).padStart(2, '0');\n    const minutes = String(orderDate.getUTCMinutes()).padStart(2, '0');\n    const seconds = String(orderDate.getUTCSeconds()).padStart(2, '0');\n    const eventTimeText = `${month}-${day}, ${hours}:${minutes}:${seconds}`;\n    \n    // Generate unique event_key\n    const event_key = `binance|${leadId}|${eventType}|${order.symbol}|${eventTimeText}|${order.executedQty}|${order.avgPrice}`;\n    \n    return {\n      platform: \"binance\",\n      leadId: leadId,\n      eventTimeText: eventTimeText,\n      eventType: eventType,\n      symbol: order.symbol,\n      price: order.avgPrice,\n      amount: order.executedQty,\n      amountAsset: order.baseAsset,\n      realizedPnl: order.totalPnl > 0 ? order.totalPnl : null,\n      fetchedAt: fetchedAt,\n      event_key: event_key\n    };\n  });\n  \n  // Build the final payload\n  results.push({\n    json: {\n      leadId: leadId,\n      fetchedAt: fetchedAt,\n      positions: positions,\n      events: events\n    }\n  });\n}\n\nreturn results;"
+            },
+            "id": "transform-data-node",
+            "name": "Transform to Backend Format",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1900,
+                624
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Workflow Configuration').first().json.backendBaseUrl + $('Workflow Configuration').first().json.ingestPath }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-API-Key",
+                            "value": "={{ $('Workflow Configuration').first().json.apiKey }}"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "ngrok-skip-browser-warning",
+                            "value": "true"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify($json) }}",
+                "options": {
+                    "response": {
+                        "response": {
+                            "fullResponse": true,
+                            "neverError": true,
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "send-to-backend-node",
+            "name": "Send to Backend API",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                2192,
+                624
+            ]
+        }
+    ],
+    "connections": {
+        "Transform to Backend Format": {
+            "main": [
+                [
+                    {
+                        "node": "Send to Backend API",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "meta": {
+        "instanceId": "affcdc2ced9336df98b77735b17fc82851c27938365ce9397fca25e6af041d36"
+    }
+}

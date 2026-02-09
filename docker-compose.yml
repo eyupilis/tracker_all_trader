@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: copytrade-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: copytrade
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: copytrade-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/copytrade?schema=public
+      INGEST_API_KEY: ${INGEST_API_KEY:-change-me-in-production}
+      RATE_LIMIT_MAX: 100
+      RATE_LIMIT_WINDOW_MS: 60000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Development only - run migrations
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: copytrade-migrate
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/copytrade?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npx prisma migrate deploy
+    profiles:
+      - migrate
+
+volumes:
+  postgres_data:

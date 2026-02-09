@@ -1,0 +1,1144 @@
+{
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "seconds",
+                            "secondsInterval": 59
+                        }
+                    ]
+                }
+            },
+            "id": "d81924eb-c477-4bfc-ae87-ffaa049b11d4",
+            "name": "Every 60 Seconds",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.3,
+            "position": [
+                -48,
+                848
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "id-1",
+                            "name": "leadIds",
+                            "value": "=[\"4897589091850209025\",\"4708220152086930177\",\"4657853710421943296\",\"4778647677431223297\",\"4881493257880589312\",\"4681698170884314113\",\"4532994172262753536\",\"4734328346700544769\",\"4734249513132666368\"]",
+                            "type": "array"
+                        },
+                        {
+                            "id": "id-2",
+                            "name": "timeRange",
+                            "value": "30D",
+                            "type": "string"
+                        },
+                        {
+                            "id": "id-3",
+                            "name": "backendBaseUrl",
+                            "value": "https://01fd-31-155-17-66.ngrok-free.app",
+                            "type": "string"
+                        },
+                        {
+                            "id": "id-4",
+                            "name": "apiKey",
+                            "value": "dev-api-key-12345",
+                            "type": "string"
+                        },
+                        {
+                            "id": "id-5",
+                            "name": "rateLimitMs",
+                            "value": 2000,
+                            "type": "number"
+                        },
+                        {
+                            "id": "id-6",
+                            "name": "orderHistory",
+                            "value": "{\"pageSize\": 10}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "id-7",
+                            "name": "ingestPath",
+                            "value": "/ingest/binance-copytrade",
+                            "type": "string"
+                        },
+                        {
+                            "id": "id-8",
+                            "name": "rawIngestPath",
+                            "value": "/ingest/raw",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "77905b2f-a1b5-4aa6-9cf3-d910a6f57d07",
+            "name": "Workflow Configuration",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                176,
+                848
+            ]
+        },
+        {
+            "parameters": {
+                "fieldToSplitOut": "leadIds",
+                "options": {}
+            },
+            "id": "51eb1395-6ba0-42cf-b82a-9e929a87bd8b",
+            "name": "Split Lead IDs",
+            "type": "n8n-nodes-base.splitOut",
+            "typeVersion": 1,
+            "position": [
+                400,
+                848
+            ]
+        },
+        {
+            "parameters": {
+                "batchSize": 10,
+                "options": {}
+            },
+            "id": "d5e6400c-3159-4c13-a29a-8d9c9f2d780c",
+            "name": "Batch 10 Lead IDs",
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 3,
+            "position": [
+                624,
+                848
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Workflow Configuration').first().json.backendBaseUrl + $('Workflow Configuration').first().json.ingestPath }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-API-Key",
+                            "value": "={{ $('Workflow Configuration').first().json.apiKey }}"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "ngrok-skip-browser-warning",
+                            "value": "true"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ $('Build Final Payload').item.json }}",
+                "options": {
+                    "response": {
+                        "response": {
+                            "fullResponse": true,
+                            "neverError": true,
+                            "responseFormat": "text"
+                        }
+                    }
+                }
+            },
+            "id": "0c55e527-4080-4df2-8410-f105bf8dcea4",
+            "name": "Send to Backend API",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                2192,
+                624
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Workflow Configuration').first().json.backendBaseUrl + $('Workflow Configuration').first().json.rawIngestPath }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-API-Key",
+                            "value": "={{ $('Workflow Configuration').first().json.apiKey }}"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "ngrok-skip-browser-warning",
+                            "value": "true"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ $('Build Final Payload').item.json }}",
+                "options": {
+                    "response": {
+                        "response": {
+                            "fullResponse": true,
+                            "neverError": true,
+                            "responseFormat": "text"
+                        }
+                    }
+                }
+            },
+            "id": "4d2f8f5c-1e0b-4c17-b329-54f34f88a6f1",
+            "name": "Send to Raw Ingest API",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                2416,
+                624
+            ]
+        },
+        {
+            "parameters": {
+                "amount": "={{ $('Workflow Configuration').first().json.rateLimitMs / 1000 }}"
+            },
+            "id": "c029fe13-7fbd-463e-ae86-2d9fc1c853f0",
+            "name": "Wait 1-2 Seconds",
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1.1,
+            "position": [
+                2416,
+                896
+            ],
+            "webhookId": "906dbea6-d859-49ad-bbf3-b5693ec28a84"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "id-1",
+                            "name": "leadId",
+                            "value": "={{ $json.leadIds }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "id-2",
+                            "name": "endTime",
+                            "value": "={{ Date.now() }}",
+                            "type": "number"
+                        },
+                        {
+                            "id": "id-3",
+                            "name": "startTime",
+                            "value": "={{ Date.now() - (30 * 24 * 60 * 60 * 1000) }}",
+                            "type": "number"
+                        },
+                        {
+                            "id": "id-4",
+                            "name": "pageSize",
+                            "value": "={{ $('Workflow Configuration').first().json.orderHistory.pageSize }}",
+                            "type": "number"
+                        },
+                        {
+                            "id": "id-5",
+                            "name": "fetchedAt",
+                            "value": "={{ new Date().toISOString() }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "includeOtherFields": true,
+                "options": {}
+            },
+            "id": "b24c60af-9193-4573-8ba5-501bd17a2aa1",
+            "name": "Calculate Timestamps",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                848,
+                544
+            ]
+        },
+        {
+            "parameters": {
+                "url": "={{ 'https://www.binance.com/bapi/futures/v1/friendly/future/spot-copy-trade/common/spot-futures-last-lead?portfolioId=' + $json.leadId }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "neverError": true,
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "b3b6fb56-031a-4a44-b27b-f02955bbc457",
+            "name": "Fetch Lead Common Info",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                1072,
+                80
+            ]
+        },
+        {
+            "parameters": {
+                "url": "={{ 'https://www.binance.com/bapi/futures/v1/friendly/future/copy-trade/lead-data/positions?portfolioId=' + $json.leadId }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "neverError": true,
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "d416345c-9018-423e-bedd-a4a8f8a08041",
+            "name": "Fetch Positions",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                1072,
+                288
+            ]
+        },
+        {
+            "parameters": {
+                "url": "={{ 'https://www.binance.com/bapi/futures/v1/friendly/future/copy-trade/lead-portfolio/detail?portfolioId=' + $json.leadId }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "neverError": true,
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "82fa0242-3323-4c4f-a025-b0290aab20f7",
+            "name": "Fetch Lead Portfolio Detail",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                1072,
+                480
+            ]
+        },
+        {
+            "parameters": {
+                "url": "https://www.binance.com/bapi/futures/v1/public/future/copy-trade/lead-portfolio/chart-data",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "dataType",
+                            "value": "ROI"
+                        },
+                        {
+                            "name": "portfolioId",
+                            "value": "={{ $json.leadId }}"
+                        },
+                        {
+                            "name": "timeRange",
+                            "value": "={{ $('Workflow Configuration').first().json.timeRange }}"
+                        }
+                    ]
+                },
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "neverError": true,
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "4d4af487-a390-4004-ab29-bdbf09f7ab7b",
+            "name": "Fetch ROI Series",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                1072,
+                672
+            ]
+        },
+        {
+            "parameters": {
+                "url": "https://www.binance.com/bapi/futures/v1/public/future/copy-trade/lead-portfolio/performance/coin",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "portfolioId",
+                            "value": "={{ $json.leadId }}"
+                        },
+                        {
+                            "name": "timeRange",
+                            "value": "={{ $('Workflow Configuration').first().json.timeRange }}"
+                        }
+                    ]
+                },
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "neverError": true,
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "d22bd5f2-1172-43bb-8166-36ac1bf00a53",
+            "name": "Fetch Asset Preferences",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                1072,
+                864
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://www.binance.com/bapi/futures/v1/friendly/future/copy-trade/lead-portfolio/order-history",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { portfolioId: $json.leadId, startTime: $json.startTime, endTime: $json.endTime, pageSize: $json.pageSize } }}",
+                "options": {
+                    "response": {
+                        "response": {
+                            "neverError": true,
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "de62a220-4258-472b-929f-36e5b0649259",
+            "name": "Fetch Order History",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [
+                1072,
+                1056
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "id-1",
+                            "leftValue": "={{ $json.code }}",
+                            "rightValue": "000000",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        },
+                        {
+                            "id": "id-2",
+                            "leftValue": "={{ $json.success }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "fdcb1f98-f6d0-4f5d-9dd8-5c0222a1e04e",
+            "name": "Validate Lead Common Info",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1296,
+                80
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "id-1",
+                            "leftValue": "={{ $json.code }}",
+                            "rightValue": "000000",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        },
+                        {
+                            "id": "id-2",
+                            "leftValue": "={{ $json.success }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "d0053a87-3c0a-4c5c-ad5b-d32368cf27d3",
+            "name": "Validate Positions",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1296,
+                288
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "id-1",
+                            "leftValue": "={{ $json.code }}",
+                            "rightValue": "000000",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        },
+                        {
+                            "id": "id-2",
+                            "leftValue": "={{ $json.success }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "42f63c8d-b302-4879-ad4b-2d965cbb50be",
+            "name": "Validate Portfolio Detail",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1296,
+                480
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "id-1",
+                            "leftValue": "={{ $json.code }}",
+                            "rightValue": "000000",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        },
+                        {
+                            "id": "id-2",
+                            "leftValue": "={{ $json.success }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "07f33855-3771-45bd-8a38-43bb276fa674",
+            "name": "Validate ROI Series",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1296,
+                672
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "id-1",
+                            "leftValue": "={{ $json.code }}",
+                            "rightValue": "000000",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        },
+                        {
+                            "id": "id-2",
+                            "leftValue": "={{ $json.success }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "67f1b3bb-91c3-42ae-bdba-286580388d66",
+            "name": "Validate Asset Preferences",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1296,
+                864
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "id-1",
+                            "leftValue": "={{ $json.code }}",
+                            "rightValue": "000000",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        },
+                        {
+                            "id": "id-2",
+                            "leftValue": "={{ $json.success }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "e8c6eb73-4f8a-4216-bd82-25228a9998f6",
+            "name": "Validate Order History",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1296,
+                1056
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const inputItems = $input.all();\nconst output = [];\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const source = inputItems[i].json;\n  const linked = $('Calculate Timestamps').itemMatching(i).json;\n  const leadId = source.leadId || linked?.leadId || source.data?.[0]?.portfolioId || 'unknown';\n  const positions = Array.isArray(source.data) ? source.data : [];\n\n  const rawPositionsCount = positions.length;\n  let nonZeroByAmountCount = 0;\n  let nonZeroByNotionalCount = 0;\n  let nonZeroByUnrealizedCount = 0;\n  let droppedBecauseAllZeroCount = 0;\n\n  const activePositions = [];\n\n  for (const pos of positions) {\n    const posAmount = Number(pos.positionAmount) || 0;\n    const notional = Number(pos.notionalValue) || 0;\n    const unrealized = Number(pos.unrealizedProfit) || 0;\n\n    const hasNonZeroAmount = posAmount !== 0;\n    const hasNonZeroNotional = notional !== 0;\n    const hasNonZeroUnrealized = unrealized !== 0;\n\n    if (hasNonZeroAmount) nonZeroByAmountCount += 1;\n    if (hasNonZeroNotional) nonZeroByNotionalCount += 1;\n    if (hasNonZeroUnrealized) nonZeroByUnrealizedCount += 1;\n\n    if (!hasNonZeroAmount && !hasNonZeroNotional && !hasNonZeroUnrealized) {\n      droppedBecauseAllZeroCount += 1;\n      continue;\n    }\n\n    activePositions.push({\n      id: pos.id,\n      symbol: pos.symbol,\n      collateral: pos.collateral,\n      positionAmount: pos.positionAmount,\n      entryPrice: pos.entryPrice,\n      markPrice: pos.markPrice,\n      leverage: pos.leverage,\n      isolated: pos.isolated,\n      positionSide: pos.positionSide,\n      unrealizedProfit: pos.unrealizedProfit,\n      cumRealized: pos.cumRealized,\n      notionalValue: pos.notionalValue,\n      breakEvenPrice: pos.breakEvenPrice,\n      adl: pos.adl,\n    });\n  }\n\n  const filteredActivePositionsCount = activePositions.length;\n\n  output.push({\n    json: {\n      leadId,\n      activePositions,\n      positionAudit: {\n        sourceRawPositionsCount: rawPositionsCount,\n        filteredActivePositionsCount,\n        droppedPositionsCount: rawPositionsCount - filteredActivePositionsCount,\n        nonZeroByAmountCount,\n        nonZeroByNotionalCount,\n        nonZeroByUnrealizedCount,\n        droppedBecauseAllZeroCount,\n      },\n    },\n    pairedItem: i,\n  });\n}\n\nreturn output;",
+                "mode": "runOnceForAllItems"
+            },
+            "id": "da9c0364-0b41-4809-b378-a59ba3785a96",
+            "name": "Filter Active Positions",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1520,
+                336
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const inputItems = $input.all();\nconst errors = [];\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const errorData = inputItems[i].json;\n  const linked = $('Calculate Timestamps').itemMatching(i).json;\n  const leadId = errorData.leadId || linked?.leadId || 'unknown';\n\n  errors.push({\n    json: {\n      nodeName: errorData.nodeName || 'Unknown',\n      leadId,\n      httpStatus: errorData.status ?? null,\n      code: errorData.code ?? null,\n      message: errorData.message || errorData.error || 'Unknown error',\n      raw: errorData,\n    },\n    pairedItem: i,\n  });\n}\n\nreturn errors;",
+                "mode": "runOnceForAllItems"
+            },
+            "id": "2447768b-5faf-4048-956c-035f112550e6",
+            "name": "Collect Errors",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1520,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const inputItems = $input.all();\nconst output = [];\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const firstResponse = inputItems[i].json;\n  const linked = $('Calculate Timestamps').itemMatching(i).json;\n\n  const leadId =\n    linked?.leadId ||\n    firstResponse.leadId ||\n    firstResponse.data?.list?.[0]?.portfolioId ||\n    'unknown';\n\n  const allOrders = Array.isArray(firstResponse.data?.list)\n    ? [...firstResponse.data.list]\n    : [];\n\n  let indexValue = firstResponse.data?.indexValue;\n  const total = Number(firstResponse.data?.total ?? allOrders.length ?? 0);\n  const startTime = linked?.startTime ?? Date.now() - (30 * 24 * 60 * 60 * 1000);\n  const endTime = linked?.endTime ?? Date.now();\n  const pageSize = linked?.pageSize ?? 10;\n\n  let guard = 0;\n\n  while (indexValue && allOrders.length < total && guard < 100) {\n    const pageResponse = await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://www.binance.com/bapi/futures/v1/friendly/future/copy-trade/lead-portfolio/order-history',\n      headers: { 'Content-Type': 'application/json' },\n      body: {\n        portfolioId: leadId,\n        startTime,\n        endTime,\n        pageSize,\n        indexValue,\n      },\n      json: true,\n    });\n\n    if (Array.isArray(pageResponse?.data?.list) && pageResponse.data.list.length > 0) {\n      allOrders.push(...pageResponse.data.list);\n      indexValue = pageResponse.data?.indexValue;\n    } else {\n      break;\n    }\n\n    guard += 1;\n  }\n\n  output.push({\n    json: {\n      leadId,\n      orderHistory: {\n        total,\n        allOrders,\n      },\n    },\n    pairedItem: i,\n  });\n}\n\nreturn output;",
+                "mode": "runOnceForAllItems"
+            },
+            "id": "c5b41927-fba2-4364-8421-5d1cf2144210",
+            "name": "Paginate Order History",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1520,
+                1104
+            ]
+        },
+        {
+            "parameters": {
+                "numberInputs": 6
+            },
+            "id": "c7f22ca4-555d-4bb4-9b47-185846af9961",
+            "name": "Merge Success Paths",
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3.2,
+            "position": [
+                1744,
+                560
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const inputItems = $input.all();\nconst groupedByLeadId = new Map();\nconst defaultTimeRange = $('Workflow Configuration').first().json.timeRange || '30D';\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const current = inputItems[i];\n  const linked = $('Calculate Timestamps').itemMatching(i).json;\n  const data = current.json.data;\n\n  const leadId =\n    current.json.leadId ||\n    data?.leadPortfolioId ||\n    data?.portfolioId ||\n    linked?.leadId ||\n    'unknown';\n\n  if (!groupedByLeadId.has(leadId)) {\n    groupedByLeadId.set(leadId, {\n      leadId,\n      fetchedAt: linked?.fetchedAt || new Date().toISOString(),\n      timeRange: defaultTimeRange,\n      startTime: linked?.startTime ?? Date.now() - (30 * 24 * 60 * 60 * 1000),\n      endTime: linked?.endTime ?? Date.now(),\n      leadCommon: null,\n      portfolioDetail: null,\n      roiSeries: [],\n      assetPreferences: null,\n      activePositions: [],\n      positionAudit: null,\n      orderHistory: { total: 0, allOrders: [] },\n    });\n  }\n\n  const payload = groupedByLeadId.get(leadId);\n\n  if (current.json.activePositions !== undefined) {\n    payload.activePositions = Array.isArray(current.json.activePositions)\n      ? current.json.activePositions\n      : [];\n\n    if (current.json.positionAudit && typeof current.json.positionAudit === 'object') {\n      payload.positionAudit = current.json.positionAudit;\n    }\n\n    continue;\n  }\n\n  if (current.json.orderHistory !== undefined) {\n    payload.orderHistory = current.json.orderHistory || { total: 0, allOrders: [] };\n    continue;\n  }\n\n  if (Array.isArray(data)) {\n    payload.roiSeries = data;\n    continue;\n  }\n\n  if (data && typeof data === 'object' && Array.isArray(data.data) && data.timeRange !== undefined) {\n    payload.assetPreferences = data;\n    continue;\n  }\n\n  if (data && typeof data === 'object' && data.leadPortfolioId !== undefined) {\n    payload.portfolioDetail = data;\n    continue;\n  }\n\n  if (data && typeof data === 'object') {\n    payload.leadCommon = data;\n  }\n}\n\nreturn Array.from(groupedByLeadId.values()).map((json) => ({ json }));",
+                "mode": "runOnceForAllItems"
+            },
+            "id": "0840ab3b-ba4a-43ef-a716-82ee17d8f746",
+            "name": "Build Final Payload",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1968,
+                624
+            ]
+        }
+    ],
+    "connections": {
+        "Every 60 Seconds": {
+            "main": [
+                [
+                    {
+                        "node": "Workflow Configuration",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Workflow Configuration": {
+            "main": [
+                [
+                    {
+                        "node": "Split Lead IDs",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Split Lead IDs": {
+            "main": [
+                [
+                    {
+                        "node": "Batch 10 Lead IDs",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Batch 10 Lead IDs": {
+            "main": [
+                [
+                    {
+                        "node": "Batch 10 Lead IDs",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Calculate Timestamps",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send to Backend API": {
+            "main": [
+                [
+                    {
+                        "node": "Send to Raw Ingest API",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send to Raw Ingest API": {
+            "main": [
+                [
+                    {
+                        "node": "Wait 1-2 Seconds",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait 1-2 Seconds": {
+            "main": [
+                [
+                    {
+                        "node": "Batch 10 Lead IDs",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Calculate Timestamps": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch Lead Common Info",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Fetch Positions",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Fetch Lead Portfolio Detail",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Fetch ROI Series",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Fetch Asset Preferences",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Fetch Order History",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Lead Common Info": {
+            "main": [
+                [
+                    {
+                        "node": "Validate Lead Common Info",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Positions": {
+            "main": [
+                [
+                    {
+                        "node": "Validate Positions",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Lead Portfolio Detail": {
+            "main": [
+                [
+                    {
+                        "node": "Validate Portfolio Detail",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch ROI Series": {
+            "main": [
+                [
+                    {
+                        "node": "Validate ROI Series",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Asset Preferences": {
+            "main": [
+                [
+                    {
+                        "node": "Validate Asset Preferences",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Order History": {
+            "main": [
+                [
+                    {
+                        "node": "Validate Order History",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validate Lead Common Info": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Success Paths",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Collect Errors",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validate Positions": {
+            "main": [
+                [
+                    {
+                        "node": "Filter Active Positions",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Collect Errors",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validate Portfolio Detail": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Success Paths",
+                        "type": "main",
+                        "index": 2
+                    }
+                ],
+                [
+                    {
+                        "node": "Collect Errors",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validate ROI Series": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Success Paths",
+                        "type": "main",
+                        "index": 3
+                    }
+                ],
+                [
+                    {
+                        "node": "Collect Errors",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validate Asset Preferences": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Success Paths",
+                        "type": "main",
+                        "index": 4
+                    }
+                ],
+                [
+                    {
+                        "node": "Collect Errors",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validate Order History": {
+            "main": [
+                [
+                    {
+                        "node": "Paginate Order History",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Collect Errors",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filter Active Positions": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Success Paths",
+                        "type": "main",
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "Paginate Order History": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Success Paths",
+                        "type": "main",
+                        "index": 5
+                    }
+                ]
+            ]
+        },
+        "Merge Success Paths": {
+            "main": [
+                [
+                    {
+                        "node": "Build Final Payload",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Final Payload": {
+            "main": [
+                [
+                    {
+                        "node": "Send to Backend API",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "meta": {
+        "instanceId": "affcdc2ced9336df98b77735b17fc82851c27938365ce9397fca25e6af041d36"
+    }
+}

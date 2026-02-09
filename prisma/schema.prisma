@@ -1,0 +1,402 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/// Lead trader being tracked (e.g., Binance copy trading leader)
+model LeadTrader {
+  id        String   @id // leadId from the platform
+  platform  String   @default("binance")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // FAZ 0: positionShow segmentation + cached profile
+  nickname         String?
+  positionShow     Boolean? // true=visible, false=hidden, null=unknown
+  posShowUpdatedAt DateTime? // when positionShow was last confirmed
+
+  positions   PositionSnapshot[]
+  events      Event[]
+  traderScore TraderScore?
+
+  @@index([platform])
+  @@index([platform, positionShow])
+}
+
+/// Snapshot of a position at a specific point in time
+model PositionSnapshot {
+  id           String   @id @default(uuid())
+  platform     String
+  leadId       String
+  fetchedAt    DateTime
+  symbol       String
+  side         String // LONG or SHORT
+  contractType String? // PERP, etc.
+  leverage     Int?
+  size         Float
+  sizeAsset    String?
+  entryPrice   Float
+  markPrice    Float?
+  marginUSDT   Float?
+  marginType   String? // CROSS, ISOLATED
+  pnlUSDT      Float?
+  roePct       Float?
+  raw          Json? // Store original payload for debugging
+  createdAt    DateTime @default(now())
+
+  leadTrader LeadTrader @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([platform, symbol])
+  @@index([leadId, fetchedAt(sort: Desc)])
+}
+
+/// Trading event (OPEN/CLOSE positions)
+model Event {
+  id            String    @id @default(uuid())
+  platform      String
+  leadId        String
+  eventKey      String    @unique // For deduplication
+  eventType     String // OPEN_LONG, OPEN_SHORT, CLOSE_LONG, CLOSE_SHORT, UNKNOWN
+  symbol        String
+  eventTimeText String // Original time text from scrape
+  eventTime     DateTime? // Parsed datetime (if possible)
+  price         Float?
+  amount        Float?
+  amountAsset   String?
+  realizedPnl   Float?
+  fetchedAt     DateTime
+  createdAt     DateTime  @default(now())
+
+  leadTrader LeadTrader @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([symbol, eventTime(sort: Desc)])
+  @@index([leadId, eventTime(sort: Desc)])
+  @@index([eventType])
+}
+
+/// Aggregated statistics per symbol (updated after each ingest)
+model SymbolAggregation {
+  id             String    @id @default(uuid())
+  platform       String
+  symbol         String
+  updatedAt      DateTime  @updatedAt
+  openLongCount  Int       @default(0)
+  openShortCount Int       @default(0)
+  totalOpen      Int       @default(0)
+  latestEventAt  DateTime?
+  latestEventKey String?
+
+  @@unique([platform, symbol])
+  @@index([platform, totalOpen(sort: Desc)])
+}
+
+/// Trader performance score (MVP: based on realized PnL)
+model TraderScore {
+  leadId   String @id
+  platform String @default("binance")
+  score30d Float  @default(0)
+
+  // FAZ 0: consensus weight fields
+  qualityScore Int? // 0-100, multi-factor quality score
+  confidence   String? // 'low' | 'medium' | 'high'
+  winRate      Float? // 0.0-1.0, null = insufficient data
+  sampleSize   Int? // closed trades in 7d window
+  traderWeight Float? // precomputed consensus weight (0.0-1.0)
+
+  updatedAt DateTime @updatedAt
+
+  leadTrader LeadTrader @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([platform, score30d(sort: Desc)])
+  @@index([platform, traderWeight(sort: Desc)])
+}
+
+/// Raw ingest data - stores complete n8n payload without any transformation
+model RawIngest {
+  id        String   @id @default(uuid())
+  leadId    String
+  platform  String   @default("binance")
+  fetchedAt DateTime
+  payload   Json // Complete JSON payload from n8n
+  createdAt DateTime @default(now())
+
+  // Quick access fields extracted from payload
+  positionsCount Int?
+  ordersCount    Int?
+  timeRange      String?
+
+  @@index([leadId, fetchedAt(sort: Desc)])
+  @@index([platform, createdAt(sort: Desc)])
+}
+
+/// Manual/auto simulation positions for consensus strategy testing
+model SimulatedPosition {
+  id        String @id @default(uuid())
+  platform  String @default("binance")
+  symbol    String
+  direction String // LONG | SHORT
+  status    String @default("OPEN") // OPEN | CLOSED
+
+  // User-defined simulation parameters
+  leverage         Float @default(1)
+  marginNotional   Float
+  positionNotional Float
+
+  // Price lifecycle
+  entryPrice Float
+  exitPrice  Float?
+
+  // Performance
+  pnlUSDT Float?
+  roiPct  Float?
+
+  // Risk Management (Sprint 1)
+  stopLossPrice       Float?
+  takeProfitPrice     Float?
+  trailingStopPct     Float?
+  trailingStopTrigger Float?
+  lastPriceUpdate     Float?
+  lastPriceCheckAt    DateTime?
+
+  // Execution Modeling (Sprint 1)
+  slippageBps         Int    @default(10)
+  commissionBps       Int    @default(4)
+  effectiveEntryPrice Float?
+  effectiveExitPrice  Float?
+  totalCommissionUSDT Float?
+
+  // Position Sizing (Sprint 1)
+  riskModel      String?
+  riskPercentage Float?
+  portfolioId    String?
+
+  // Lifecycle metadata
+  source                String    @default("MANUAL") // MANUAL | AUTO
+  closeReason           String?
+  closeTriggerLeadId    String?
+  closeTriggerEventType String?
+  notes                 String?
+  openedAt              DateTime  @default(now())
+  closedAt              DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio? @relation(fields: [portfolioId], references: [id])
+
+  @@index([platform, status, openedAt(sort: Desc)])
+  @@index([symbol, status])
+  @@index([status, lastPriceCheckAt])
+  @@index([portfolioId, status])
+}
+
+/// Auto-trigger rule config for simulation engine (singleton per platform)
+model AutoTriggerRule {
+  id       String  @id @default("default")
+  platform String  @default("binance")
+  enabled  Boolean @default(false)
+
+  // Trigger thresholds
+  segment         String @default("VISIBLE") // VISIBLE | HIDDEN | BOTH
+  timeRange       String @default("24h") // 1h | 4h | 24h | 7d | ALL
+  minTraders      Int    @default(2)
+  minConfidence   Int    @default(40) // 0..100
+  minSentimentAbs Int    @default(20) // 0..100
+
+  // Simulation params for auto-opened positions
+  leverage       Float @default(10)
+  marginNotional Float @default(100)
+
+  // Cooldown per symbol after close/open
+  cooldownMinutes Int @default(30)
+
+  // Operational metadata
+  lastRunAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([platform])
+}
+
+/// Persistent rule config for FAZ 6 insights engine (singleton per platform)
+model InsightsRule {
+  id          String @id @default("default")
+  platform    String @default("binance")
+  defaultMode String @default("balanced") // conservative | balanced | aggressive
+
+  // Per-mode thresholds and multipliers (stored as JSON object)
+  conservativePreset Json
+  balancedPreset     Json
+  aggressivePreset   Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([platform])
+}
+
+/// Portfolio for managing simulated positions with risk parameters (Sprint 1)
+model Portfolio {
+  id             String @id @default(uuid())
+  name           String
+  platform       String @default("binance")
+  initialBalance Float  @default(10000)
+  currentBalance Float  @default(10000)
+
+  // Risk parameters
+  maxRiskPerTrade      Float @default(2.0)
+  maxPortfolioRisk     Float @default(10.0)
+  maxOpenPositions     Int   @default(5)
+  maxLeverageAllowed   Float @default(20.0)
+  defaultSlippageBps   Int   @default(10)
+  defaultCommissionBps Int   @default(4)
+
+  // Kelly Criterion parameters
+  kellyFraction Float @default(0.25)
+  minSampleSize Int   @default(20)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  positions SimulatedPosition[]
+  snapshots PortfolioSnapshot[]
+  metrics   PortfolioMetric?
+
+  @@unique([platform, name])
+  @@index([platform])
+}
+
+/// Time-series snapshots for portfolio equity curve tracking (Sprint 1)
+model PortfolioSnapshot {
+  id          String   @id @default(uuid())
+  portfolioId String
+  snapshotAt  DateTime @default(now())
+
+  balance       Float
+  unrealizedPnl Float
+  realizedPnl   Float
+  totalPnl      Float
+  openPositions Int
+  totalValue    Float
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId, snapshotAt(sort: Desc)])
+  @@index([snapshotAt])
+}
+
+/// Aggregate portfolio analytics (Sprint 1)
+model PortfolioMetric {
+  id          String @id @default(uuid())
+  portfolioId String @unique
+
+  // Performance metrics
+  totalTrades   Int   @default(0)
+  winningTrades Int   @default(0)
+  losingTrades  Int   @default(0)
+  winRate       Float @default(0)
+  avgWin        Float @default(0)
+  avgLoss       Float @default(0)
+  profitFactor  Float @default(0)
+
+  // Risk metrics
+  maxDrawdown     Float @default(0)
+  maxConsecLosses Int   @default(0)
+  maxConsecWins   Int   @default(0)
+
+  // Execution quality
+  avgSlippageBps  Float @default(0)
+  totalCommission Float @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+/// Backtest result storage for advanced analytics (Sprint 2)
+model BacktestResult {
+  id           String  @id @default(uuid())
+  portfolioId  String?
+  symbolFilter String?
+  dateRange    String
+  totalTrades  Int
+
+  // Basic metrics
+  winRate      Float
+  avgWin       Float
+  avgLoss      Float
+  profitFactor Float
+  netPnl       Float
+  maxDrawdown  Float
+
+  // Advanced risk-adjusted metrics (Sprint 2)
+  sharpeRatio  Float?
+  sortinoRatio Float?
+  calmarRatio  Float?
+  var95        Float?
+  cvar95       Float?
+
+  // Monte Carlo results (Sprint 2)
+  mcMean             Float?
+  mcMedian           Float?
+  mcStdDev           Float?
+  mcConfidence95Low  Float?
+  mcConfidence95High Float?
+  probabilityOfRuin  Float?
+
+  // Walk-forward results (Sprint 2)
+  wfInSampleWinRate  Float?
+  wfOutSampleWinRate Float?
+  wfCorrelation      Float?
+  wfOverfitScore     Float?
+
+  createdAt DateTime @default(now())
+
+  @@index([portfolioId, createdAt(sort: Desc)])
+  @@index([createdAt])
+}
+
+/// Position lifecycle tracking for improved open/close detection (Yol 2)
+/// Tracks when positions first appear, last seen, and disappear from snapshots
+/// Provides estimated open/close times with ±30-60s uncertainty range
+model PositionState {
+  id        String @id @default(uuid())
+  platform  String @default("binance")
+  leadId    String
+  symbol    String
+  direction String // LONG | SHORT
+  status    String @default("ACTIVE") // ACTIVE | CLOSED
+
+  // Position details (captured at first sighting)
+  entryPrice Float
+  amount     Float
+  leverage   Int?
+
+  // Lifecycle tracking - CORE FEATURE
+  firstSeenAt   DateTime // When position first appeared in snapshot
+  lastSeenAt    DateTime  @updatedAt // Updated on each curl where position still exists
+  disappearedAt DateTime? // When position was first noticed missing
+
+  // Estimated time ranges (±30-60s uncertainty)
+  estimatedOpenTime  DateTime? // Midpoint: (fetchBefore + firstSeenAt) / 2
+  estimatedCloseTime DateTime? // Midpoint: (lastSeenAt + disappearedAt) / 2
+
+  // Event references (if available from orderHistory)
+  openEventId  String? // References Event.id if we have accurate open event
+  closeEventId String? // References Event.id if we have accurate close event
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([platform, leadId, symbol, direction, firstSeenAt])
+  @@index([platform, leadId, status])
+  @@index([symbol, status])
+  @@index([status, lastSeenAt(sort: Desc)])
+}
