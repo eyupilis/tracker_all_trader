@@ -26,11 +26,11 @@ import {
 import { applySlippage, computeCommission } from '../services/executionModel.js';
 import { monitorOpenPositions } from '../services/positionMonitor.js';
 import {
-  getOrCreateDefaultPortfolio,
+  // getOrCreateDefaultPortfolio, // Unused
   createPortfolio,
   getPortfolio,
   getPortfolioPerformance,
-  updatePortfolioMetrics,
+  // updatePortfolioMetrics, // Unused
 } from '../services/portfolioManager.js';
 
 // Utility functions
@@ -443,7 +443,7 @@ export async function simulationRoutes(fastify: FastifyInstance) {
         const effectiveEntryPrice = entrySlippage.effectivePrice;
 
         // Calculate entry commission
-        const entryCommission = computeCommission({ positionNotional, commissionBps });
+        // const entryCommission = computeCommission({ positionNotional, commissionBps }); // Unused for now
 
         // Create position
         const position = await prisma.simulatedPosition.create({
@@ -570,7 +570,7 @@ export async function simulationRoutes(fastify: FastifyInstance) {
   // ============================================================================
 
   // GET /simulation/backtests - List saved backtest results
-  fastify.get('/simulation/backtests', async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.get('/simulation/backtests', async (_request: FastifyRequest, reply: FastifyReply) => {
     try {
       const results = await prisma.backtestResult.findMany({
         orderBy: { createdAt: 'desc' },

@@ -1723,7 +1723,7 @@ export async function signalsRoutes(fastify: FastifyInstance) {
         const cutoffTime = timeRangeMs === Infinity
             ? new Date(0)
             : new Date(Date.now() - timeRangeMs);
-        const cutoffMs = cutoffTime.getTime();
+        // const cutoffMs = cutoffTime.getTime(); // Unused for now
 
         // YOL 2: Parse recentlyOpened filter
         const recentlyOpenedMs = recentlyOpened ? parseRecentlyOpenedMs(recentlyOpened) : null;
@@ -1803,7 +1803,7 @@ export async function signalsRoutes(fastify: FastifyInstance) {
             const payload = ingest.payload;
             const portfolio = payload.portfolioDetail || {};
             const positions = payload.activePositions || [];
-            const orders = payload.orderHistory?.allOrders || [];
+            // const orders = payload.orderHistory?.allOrders || []; // Unused for now
             const lt = ltMap.get(ingest.leadId);
             const score = scoreMap.get(ingest.leadId);
             const weight = score?.traderWeight ?? null;
@@ -2147,7 +2147,7 @@ export async function signalsRoutes(fastify: FastifyInstance) {
                     .map(t => {
                         if (!t.openedAt) return null;
                         // openedAt might be Date object or ISO string
-                        const time = t.openedAt instanceof Date ? t.openedAt.getTime() : new Date(t.openedAt).getTime();
+                        const time = typeof t.openedAt === 'string' ? new Date(t.openedAt).getTime() : t.openedAt.getTime();
                         return isNaN(time) ? null : time;
                     })
                     .filter((t): t is number => t != null);
@@ -2292,7 +2292,7 @@ export async function signalsRoutes(fastify: FastifyInstance) {
         const cutoffTime = timeRangeMs === Infinity
             ? new Date(0)
             : new Date(Date.now() - timeRangeMs);
-        const cutoffMs = cutoffTime.getTime();
+        // const cutoffMs = cutoffTime.getTime(); // Unused for now
         const targetSymbol = String(symbol || '').toUpperCase();
 
         // Get latest ingests for each trader
@@ -2352,7 +2352,7 @@ export async function signalsRoutes(fastify: FastifyInstance) {
             const payload = ingest.payload;
             const portfolio = payload.portfolioDetail || {};
             const positions = payload.activePositions || [];
-            const orders = payload.orderHistory?.allOrders || [];
+            // const orders = payload.orderHistory?.allOrders || []; // Unused for now
             const lt = ltMap.get(ingest.leadId);
             const score = scoreMap.get(ingest.leadId);
             const weight = score?.traderWeight ?? null;
@@ -3020,9 +3020,9 @@ export async function signalsRoutes(fastify: FastifyInstance) {
                 symbol: event.symbol,
                 price: event.price || 0,
                 amount: event.amount || 0,
-                leverage: event.leverage,
+                leverage: null, // Events don't track leverage
                 realizedPnl: event.realizedPnl,
-                eventTime: event.eventTime.getTime(),
+                eventTime: event.eventTime ? event.eventTime.getTime() : Date.now(),
                 segment: traderSegment,
                 traderWeight: score?.traderWeight ?? null,
                 qualityScore: score?.qualityScore ?? null,

@@ -58,7 +58,7 @@ async function getCurrentPrice(symbol: string): Promise<number | null> {
 /**
  * Compute performance for a position (reusing existing logic)
  */
-function computeSimulationPerformance(params: {
+export function computeSimulationPerformance(params: {
   direction: 'LONG' | 'SHORT';
   entryPrice: number;
   exitPrice: number;

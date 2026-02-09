@@ -36,7 +36,7 @@ export interface KellySizeResult {
 }
 
 export function computeKellySize(params: KellySizeInput): KellySizeResult {
-  const { traderWinRate, avgRiskReward, portfolioBalance, kellyFraction, minSampleSize } = params;
+  const { traderWinRate, avgRiskReward, portfolioBalance, kellyFraction } = params;
 
   // Validate inputs
   if (portfolioBalance <= 0) {
