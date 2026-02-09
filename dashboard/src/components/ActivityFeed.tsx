@@ -295,13 +295,13 @@ export function ActivityFeed({ className, onSymbolClick, onTraderClick }: Activi
 
     // Event type filter
     if (eventFilter === 'OPEN') {
-      result = result.filter(e => e.eventType.startsWith('OPEN'));
+      result = result.filter(e => e.eventType?.startsWith('OPEN'));
     } else if (eventFilter === 'CLOSE') {
-      result = result.filter(e => e.eventType.startsWith('CLOSE'));
+      result = result.filter(e => e.eventType?.startsWith('CLOSE'));
     } else if (eventFilter === 'LONG') {
-      result = result.filter(e => e.eventType.includes('LONG'));
+      result = result.filter(e => e.eventType?.includes('LONG'));
     } else if (eventFilter === 'SHORT') {
-      result = result.filter(e => e.eventType.includes('SHORT'));
+      result = result.filter(e => e.eventType?.includes('SHORT'));
     }
 
     return result;
