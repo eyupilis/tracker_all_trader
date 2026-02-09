@@ -11,13 +11,11 @@ CREATE TABLE "PositionState" (
     "leverage" INTEGER,
     "firstSeenAt" TIMESTAMP(3) NOT NULL,
     "lastSeenAt" TIMESTAMP(3) NOT NULL,
+    "disappearedAt" TIMESTAMP(3),
     "estimatedOpenTime" TIMESTAMP(3),
-    "closedAt" TIMESTAMP(3),
-    "exitPrice" DOUBLE PRECISION,
-    "closedBy" TEXT,
-    "pnl" DOUBLE PRECISION,
-    "roi" DOUBLE PRECISION,
-    "holdDurationSeconds" INTEGER,
+    "estimatedCloseTime" TIMESTAMP(3),
+    "openEventId" TEXT,
+    "closeEventId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -25,13 +23,13 @@ CREATE TABLE "PositionState" (
 );
 
 -- CreateIndex
-CREATE INDEX "PositionState_leadId_symbol_idx" ON "PositionState"("leadId", "symbol");
+CREATE UNIQUE INDEX "PositionState_platform_leadId_symbol_direction_firstSeenAt_key" ON "PositionState"("platform", "leadId", "symbol", "direction", "firstSeenAt");
 
 -- CreateIndex
-CREATE INDEX "PositionState_leadId_status_idx" ON "PositionState"("leadId", "status");
+CREATE INDEX "PositionState_platform_leadId_status_idx" ON "PositionState"("platform", "leadId", "status");
 
 -- CreateIndex
 CREATE INDEX "PositionState_symbol_status_idx" ON "PositionState"("symbol", "status");
 
 -- CreateIndex
-CREATE INDEX "PositionState_firstSeenAt_idx" ON "PositionState"("firstSeenAt" DESC);
+CREATE INDEX "PositionState_status_lastSeenAt_idx" ON "PositionState"("status", "lastSeenAt" DESC);
