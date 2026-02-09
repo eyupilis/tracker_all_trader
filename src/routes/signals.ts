@@ -2147,8 +2147,14 @@ export async function signalsRoutes(fastify: FastifyInstance) {
                     .map(t => {
                         if (!t.openedAt) return null;
                         // openedAt might be Date object or ISO string
-                        const time = typeof t.openedAt === 'string' ? new Date(t.openedAt).getTime() : t.openedAt.getTime();
-                        return isNaN(time) ? null : time;
+                        try {
+                            const time = typeof t.openedAt === 'string'
+                                ? new Date(t.openedAt).getTime()
+                                : (t.openedAt as Date).getTime();
+                            return isNaN(time) ? null : time;
+                        } catch {
+                            return null;
+                        }
                     })
                     .filter((t): t is number => t != null);
                 const earliestOpenTime = openTimes.length > 0 ? Math.min(...openTimes) : null;

@@ -23,7 +23,7 @@ import {
   computeTakeProfit,
   checkPortfolioRisk,
 } from '../services/riskCalculator.js';
-import { applySlippage, computeCommission } from '../services/executionModel.js';
+import { applySlippage } from '../services/executionModel.js'; // computeCommission unused
 import { monitorOpenPositions } from '../services/positionMonitor.js';
 import {
   // getOrCreateDefaultPortfolio, // Unused
